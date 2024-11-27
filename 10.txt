@@ -1,0 +1,80 @@
+10. KMP
+import java.util.Scanner;
+
+public class KMP_Chat {
+
+    // Function to compute the LPS (Longest Prefix Suffix) array for the pattern
+    public static int[] computeLPSArray(String pattern) {
+        int length = 0; // Length of the previous longest prefix suffix
+        int i = 1; // Start from index 1, since LPS[0] is always 0
+        int[] lps = new int[pattern.length()];
+        lps[0] = 0; // LPS[0] is always 0
+
+        // Loop to fill the lps array
+        while (i < pattern.length()) {
+            if (pattern.charAt(i) == pattern.charAt(length)) {
+                length++;
+                lps[i] = length;
+                i++;
+            } else {
+                if (length != 0) {
+                    // Set length to the value of the previous LPS
+                    length = lps[length - 1];
+                } else {
+                    lps[i] = 0;
+                    i++;
+                }
+            }
+        }
+        return lps;
+    }
+
+    // Function to search for the pattern in the given text using the KMP algorithm
+    public static void KMPSearch(String text, String pattern) {
+        int[] lps = computeLPSArray(pattern); // Compute the LPS array for the pattern
+        int i = 0; // Index for the text
+        int j = 0; // Index for the pattern
+        int textLength = text.length();
+        int patternLength = pattern.length();
+
+        // Display the LPS array
+        System.out.print("Prefix Table (LPS Array): ");
+        for (int k = 0; k < lps.length; k++) {
+            System.out.print(lps[k] + " ");
+        }
+        System.out.println();
+
+        // Start matching the pattern with the text
+        while (i < textLength) {
+            if (text.charAt(i) == pattern.charAt(j)) {
+                i++;
+                j++;
+            }
+
+            if (j == patternLength) {
+                System.out.println("Pattern found at index " + (i - j));
+                j = lps[j - 1]; // Continue checking for other occurrences
+            } else if (i < textLength && text.charAt(i) != pattern.charAt(j)) {
+                // Mismatch after j matches
+                if (j != 0) {
+                    j = lps[j - 1]; // Use LPS array to skip unnecessary comparisons
+                } else {
+                    i++;
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Input text and pattern from user
+        System.out.println("Enter the text:");
+        String text = scanner.nextLine();
+        System.out.println("Enter the pattern:");
+        String pattern = scanner.nextLine();
+
+        // Perform KMP search
+        KMPSearch(text, pattern);
+    }
+}

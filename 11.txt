@@ -1,0 +1,85 @@
+11.Automata
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class FiniteAutomatonStringMatching {
+    private int[][] transitionTable;
+    private int numStates;
+
+    public FiniteAutomatonStringMatching(String pattern) {
+        numStates = pattern.length() + 1;
+        transitionTable = new int[numStates][256]; // Assume ASCII abccharacters
+        buildTransitionTable(pattern);
+    }
+
+    private void buildTransitionTable(String pattern) {
+        int m = pattern.length();
+        for (int state = 0; state <= m; state++) {
+            for (int x = 0; x < 256; x++) {
+                transitionTable[state][x] = getNextState(pattern, state,
+                        (char) x);
+            }
+        }
+        System.out.println("Transition Table:");
+        for (int state = 0; state <= m; state++) {
+            for (int x = 'a'; x <= 'z'; x++) {
+                if (transitionTable[state][x] != 0) {
+                    System.out.println("State " + state + " -" + (char) x + "-> " +
+                            transitionTable[state][x]);
+                }
+            }
+        }
+    }
+
+    private int getNextState(String pattern, int state, char x) {
+        if (state < pattern.length() && pattern.charAt(state) == x) {
+            return state + 1;
+        }
+
+        for (int ns = state; ns > 0; ns--) {
+            if (pattern.charAt(ns - 1) == x) {
+                boolean flag = true;
+                for (int i = 0; i < ns - 1; i++) {
+                    if (pattern.charAt(i) != pattern.charAt(state - ns + 1 + i)) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    return ns;
+                }
+            }
+        }
+        return 0;
+    }
+
+    public void search(String text, String pattern) {
+        int m = pattern.length();
+        int n = text.length();
+        int state = 0;
+        boolean patternFound = false;
+        for (int i = 0; i < n; i++) {
+            state = transitionTable[state][text.charAt(i)];
+            if (state == m) {
+                System.out.println("Pattern found at index: " + (i - m + 1));
+                patternFound = true;
+            }
+        }
+        if (!patternFound) {
+            System.out.println("Pattern not found in the text.");
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the pattern string: ");
+        String pattern = scanner.nextLine();
+        System.out.print("Enter the text string: ");
+        String text = scanner.nextLine();
+        FiniteAutomatonStringMatching automaton = new FiniteAutomatonStringMatching(pattern);
+        automaton.search(text, pattern);
+        scanner.close();
+    }
+}

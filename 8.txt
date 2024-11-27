@@ -1,0 +1,99 @@
+8. Ford
+
+
+import java.util.*;
+
+class FordFulkerson {
+    private int V;
+    private int[][] residualGraph;
+
+    public FordFulkerson(int vertices) {
+        this.V = vertices;
+        this.residualGraph = new int[vertices][vertices];
+    }
+
+    private boolean bfs(int[][] rGraph, int source, int sink, int[] parent) {
+        boolean[] visited = new boolean[V];
+        Arrays.fill(visited, false);
+
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(source);
+        visited[source] = true;
+        parent[source] = -1;
+
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+
+            for (int v = 0; v < V; v++) {
+                if (!visited[v] && rGraph[u][v] > 0) {
+                    queue.add(v);
+                    parent[v] = u;
+                    visited[v] = true;
+                    if (v == sink) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public int fordFulkerson(int[][] graph, int source, int sink) {
+
+        for (int u = 0; u < V; u++) {
+            for (int v = 0; v < V; v++) {
+                residualGraph[u][v] = graph[u][v];
+            }
+        }
+
+        int[] parent = new int[V];
+        int maxFlow = 0;
+        while (bfs(residualGraph, source, sink, parent)) {
+
+            int pathFlow = Integer.MAX_VALUE;
+            List<Integer> path = new ArrayList<>();
+
+            for (int v = sink; v != source; v = parent[v]) {
+                int u = parent[v];
+                pathFlow = Math.min(pathFlow, residualGraph[u][v]);
+                path.add(v);
+            }
+            path.add(source);
+            Collections.reverse(path);
+
+            System.out.println("Augmented path: " + path);
+            System.out.println("Flow added: " + pathFlow);
+
+            for (int v = sink; v != source; v = parent[v]) {
+                int u = parent[v];
+                residualGraph[u][v] -= pathFlow;
+                residualGraph[v][u] += pathFlow;
+            }
+
+            maxFlow += pathFlow;
+        }
+
+        return maxFlow;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the number of vertices: ");
+        int vertices = sc.nextInt();
+        FordFulkerson ff = new FordFulkerson(vertices);
+        int[][] graph = new int[vertices][vertices];
+        System.out.println("Enter the capacity matrix:");
+        for (int i = 0; i < vertices; i++) {
+            for (int j = 0; j < vertices; j++) {
+                graph[i][j] = sc.nextInt();
+            }
+        }
+        System.out.print("Enter the source node: ");
+        int source = sc.nextInt();
+        System.out.print("Enter the sink node: ");
+        int sink = sc.nextInt();
+        int maxFlow = ff.fordFulkerson(graph, source, sink);
+        System.out.println("The maximum possible flow is: " + maxFlow);
+        sc.close();
+    }
+}

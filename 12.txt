@@ -1,0 +1,59 @@
+12. Vertex Cover
+
+
+
+import java.util.ArrayList;  
+import java.util.List;  
+import java.util.Scanner;  
+  
+public class VertexCover {  
+    private static boolean isVertexCover(int[][] graph, List<Integer> vertexSet) {  
+        int V = graph.length;  
+        boolean[] visitedEdges = new boolean[V * V];  
+        for (int u : vertexSet) {  
+            for (int v = 0; v < V; v++) {  
+                if (graph[u][v] == 1) {  
+                    visitedEdges[u * V + v] = true;  
+                    visitedEdges[v * V + u] = true;  
+                } } } 
+        for (int i = 0; i < V; i++) {  
+            for (int j = 0; j < V; j++) {  
+                if (graph[i][j] == 1 && !visitedEdges[i * V + j]) {  
+                    return false;  
+                }  }  } 
+        return true;  
+    }  
+    private static List<Integer> findMinimumVertexCover(int[][] graph) {  
+        int V = graph.length;  
+        List<Integer> minimumVertexCover = new ArrayList<>();  
+        for (int i = 1; i < (1 << V); i++) {  
+            List<Integer> vertexSet = new ArrayList<>();  
+            for (int j = 0; j < V; j++) {  
+                if ((i & (1 << j)) != 0) {  
+                    vertexSet.add(j);  
+                } } 
+            if (isVertexCover(graph, vertexSet) &&   
+               (minimumVertexCover.isEmpty() || vertexSet.size() <  
+minimumVertexCover.size())) {  
+                minimumVertexCover = new ArrayList<>(vertexSet);  
+            } } 
+        return minimumVertexCover;  
+    }  
+  
+    public static void main(String[] args) {  
+        Scanner scanner = new Scanner(System.in);  
+        System.out.print("Enter the number of vertices: ");  
+        int V = scanner.nextInt();  
+        int[][] graph = new int[V][V];  
+        System.out.println("Enter the edges in the format 'u v' (0-based index). Type '-1 -1' to stop:");  
+        while (true) {  
+            int u = scanner.nextInt();  
+            int v = scanner.nextInt();  
+            if (u == -1 && v == -1) {                 break;   } 
+            graph[u][v] = 1;   
+            graph[v][u] = 1;   
+        }  
+        List<Integer> minimumVertexCover = findMinimumVertexCover(graph);  
+        System.out.println("Minimum Vertex Cover: " + minimumVertexCover);  
+    }  
+} 

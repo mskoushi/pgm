@@ -1,0 +1,263 @@
+1. CirLinkList
+
+import java.util.Scanner;
+
+class Node {
+    int data;
+    Node next;
+    Node prev;
+
+    Node(int data) {
+        this.data = data;
+        this.next = null;
+        this.prev = null;
+    }
+}
+
+class CircularDoublyLinkedList {
+    private Node head;
+
+    public CircularDoublyLinkedList() {
+        head = null;
+    }
+
+    // Insert at front
+    public void insertFront(int data) {
+        Node newNode = new Node(data);
+        if (head == null) {
+            head = newNode;
+            head.next = head;
+            head.prev = head;
+        } else {
+            Node tail = head.prev;
+            newNode.next = head;
+            newNode.prev = tail;
+            tail.next = newNode;
+            head.prev = newNode;
+            head = newNode;
+        }
+    }
+
+    // Insert at rear
+    public void insertRear(int data) {
+        Node newNode = new Node(data);
+        if (head == null) {
+            head = newNode;
+            head.next = head;
+            head.prev = head;
+        } else {
+            Node tail = head.prev;
+            newNode.next = head;
+            newNode.prev = tail;
+            tail.next = newNode;
+            head.prev = newNode;
+        }
+    }
+
+    // Delete from front
+    public void deleteFront() {
+        if (head == null) return;
+
+        if (head.next == head) {
+            head = null;
+        } else {
+            Node tail = head.prev;
+            tail.next = head.next;
+            head.next.prev = tail;
+            head = head.next;
+        }
+    }
+
+    // Delete from rear
+    public void deleteRear() {
+        if (head == null) return;
+
+        if (head.next == head) {
+            head = null;
+        } else {
+            Node tail = head.prev;
+            Node newTail = tail.prev;
+            newTail.next = head;
+            head.prev = newTail;
+        }
+    }
+
+    // Insert at specified position
+    public void insertAtPosition(int data, int position) {
+        if (position < 0) return;
+
+        Node newNode = new Node(data);
+        Node current = head;
+
+        // Traverse to find the specified position
+        int count = 0;
+        do {
+            if (count == position) {
+                if (current == head) {
+                    insertFront(data); // Insert at front if position is 0
+                } else {
+                    newNode.next = current;
+                    newNode.prev = current.prev;
+                    current.prev.next = newNode;
+                    current.prev = newNode;
+                }
+                return;
+            }
+            current = current.next;
+            count++;
+        } while (current != head);
+
+        // If position is out of bounds
+        System.out.println("Position " + position + " does not exist.");
+    }
+
+    // Insert after specified position
+    public void insertAfterPosition(int data, int position) {
+        if (position < 0) return;
+
+        Node current = head;
+        int count = 0;
+
+        // Traverse the list to find the specified position
+        do {
+            if (count == position) {
+                Node newNode = new Node(data);
+                newNode.next = current.next;
+                newNode.prev = current;
+                current.next.prev = newNode;
+                current.next = newNode;
+                return;
+            }
+            current = current.next;
+            count++;
+        } while (current != head);
+
+        System.out.println("Position " + position + " does not exist.");
+    }
+
+    // Delete at specified position
+    public void deleteAtPosition(int position) {
+        if (position < 0 || head == null) {
+            System.out.println("Invalid position.");
+            return;
+        }
+
+        Node current = head;
+        int count = 0;
+        do {
+            if (count == position) {
+                if (current == head) {
+                    deleteFront();
+                } else if (current.next == head) {
+                    deleteRear();
+                } else {
+                    current.prev.next = current.next;
+                    current.next.prev = current.prev;
+                }
+                return;
+            }
+            current = current.next;
+            count++;
+        } while (current != head);
+
+        System.out.println("Position " + position + " does not exist.");
+    }
+
+    // Display the list
+    public void display() {
+        if (head == null) {
+            System.out.println("List is empty.");
+            return;
+        }
+        Node current = head;
+        do {
+            System.out.print(current.data + " ");
+            current = current.next;
+        } while (current != head);
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        CircularDoublyLinkedList list = new CircularDoublyLinkedList();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Choose an operation:");
+            System.out.println("1. Insert at Front");
+            System.out.println("2. Insert at Rear");
+            System.out.println("3. Delete from Front");
+            System.out.println("4. Delete from Rear");
+            System.out.println("5. Insert at Specified Position");
+            System.out.println("6. Insert After Specified Position");
+            System.out.println("7. Delete at Specified Position");
+            System.out.println("8. Display");
+            System.out.println("9. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter value to insert at front: ");
+                    int frontData = scanner.nextInt();
+                    list.insertFront(frontData);
+                    System.out.println("Current List: ");
+                    list.display();
+                    break;
+                case 2:
+                    System.out.print("Enter value to insert at rear: ");
+                    int rearData = scanner.nextInt();
+                    list.insertRear(rearData);
+                    System.out.println("Current List: ");
+                    list.display();
+                    break;
+                case 3:
+                    list.deleteFront();
+                    System.out.println("Deleted from front.");
+                    System.out.println("Current List: ");
+                    list.display();
+                    break;
+                case 4:
+                    list.deleteRear();
+                    System.out.println("Deleted from rear.");
+                    System.out.println("Current List: ");
+                    list.display();
+                    break;
+                case 5:
+                    System.out.print("Enter value to insert: ");
+                    int insertData = scanner.nextInt();
+                    System.out.print("Enter position to insert at: ");
+                    int insertPosition = scanner.nextInt();
+                    list.insertAtPosition(insertData, insertPosition);
+                    System.out.println("Current List: ");
+                    list.display();
+                    break;
+                case 6:
+                    System.out.print("Enter value to insert: ");
+                    int afterData = scanner.nextInt();
+                    System.out.print("Enter position after which to insert: ");
+                    int afterPosition = scanner.nextInt();
+                    list.insertAfterPosition(afterData, afterPosition);
+                    System.out.println("Current List: ");
+                    list.display();
+                    break;
+                case 7:
+                    System.out.print("Enter position to delete at: ");
+                    int deletePosition = scanner.nextInt();
+                    list.deleteAtPosition(deletePosition);
+                    System.out.println("Current List: ");
+                    list.display();
+                    break;
+                case 8:
+                    System.out.println("Current List: ");
+                    list.display();
+                    break;
+                case 9:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}

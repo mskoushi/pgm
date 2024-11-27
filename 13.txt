@@ -1,0 +1,54 @@
+13. Set Covering
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+
+public class SetCovering {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of sets: ");
+        int numberOfSets = scanner.nextInt();
+        scanner.nextLine();
+        List<Set<Integer>> listOfSets = new ArrayList<>();
+        for (int i = 0; i < numberOfSets; i++) {
+            System.out.print("Enter set " + (i + 1) + " elements (space-separated): ");
+            Set<Integer> set = new LinkedHashSet<>(Arrays.asList(
+                    Arrays.stream(scanner.nextLine().split(" ")).map(Integer::parseInt).toArray(Integer[]::new)));
+            listOfSets.add(set);
+        }
+        System.out.print("Enter solution elements (space-separated): ");
+        Set<Integer> solutionSet = new LinkedHashSet<>(Arrays.asList(
+                Arrays.stream(scanner.nextLine().split(" ")).map(Integer::parseInt).toArray(Integer[]::new)));
+        Set<Set<Integer>> firstSolution = shortestCombination(listOfSets, solutionSet);
+        System.out.println("The shortest combination was " + firstSolution);
+    }
+
+    private static Set<Set<Integer>> shortestCombination(List<Set<Integer>> listOfSets, Set<Integer> solutionSet) {
+        int combinations = 1 << listOfSets.size();
+        List<Set<Set<Integer>>> possibleSolutions = new ArrayList<>();
+
+        for (int l = 0; l < combinations; l++) {
+            Set<Set<Integer>> combination = new LinkedHashSet<>();
+            for (int j = 0; j < listOfSets.size(); j++) {
+                if (((l >> j) & 1) != 0)
+                    combination.add(listOfSets.get(j));
+            }
+            if (union(combination).equals(solutionSet))
+                possibleSolutions.add(combination);
+        }
+        return possibleSolutions.stream().min(Comparator.comparingInt(Set::size)).orElse(null);
+    }
+
+    private static Set<Integer> union(Set<Set<Integer>> sets) {
+        Set<Integer> union = new LinkedHashSet<>();
+        for (Set<Integer> set : sets)
+            union.addAll(set);
+        return union;
+    }
+}

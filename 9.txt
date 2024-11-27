@@ -1,0 +1,28 @@
+9.Robin Karp
+import java.util.Scanner;
+
+public class RobinKarp {
+public static void main(String[] args) {  
+Scanner in = new Scanner(System.in);  
+System.out.println("Enter the Numeric String:");  
+String text = in.nextLine();  
+System.out.println("Enter the pattern to be searched:");  
+String pattern = in.nextLine();  
+int m = pattern.length(), n = text.length(), q = 11;  
+int p = Integer.parseInt(pattern) % q, flag = 0;  
+for (int s = 0; s <= n - m; s++) {  
+int rem = Integer.parseInt(text.substring(s, s + m)) % q;  
+if (p == rem) {  
+if (text.substring(s, s + m).equals(pattern)) {  
+System.out.println("SUCCESS!!! The pattern is found at position " + (s + 1));  
+flag = 1;  
+break;  
+}  
+}  
+}  
+if (flag == 0) {  
+System.out.println("FAILURE!!!! The pattern " + pattern + " is not found in the text");  
+}  
+in.close();  
+}
+}  

@@ -1,0 +1,101 @@
+15. Bipartite
+
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+
+public class MaxBipartiteMatching {
+    int[][] adj;
+    int rows, cols;
+    final int MATCH = 2, NOT_MATCH = 1, NOT_LABELED = -1;
+    int[] rowLabel, colLabel;
+
+    public MaxBipartiteMatching(int[][] adj) {
+        this.adj = adj;
+        rows = adj.length;
+        cols = adj[0].length;
+        rowLabel = new int[rows];
+        colLabel = new int[cols];
+    }
+
+    public void match() {
+        Set<Integer> usedCols = new HashSet<>();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (adj[i][j] == NOT_MATCH && !usedCols.contains(j)) {
+                    adj[i][j] = MATCH;
+                    usedCols.add(j);
+                    break;
+                }
+            }
+        }
+        label();
+    }
+
+    public void label() {
+        boolean colScanDone = true;
+        for (int i = 0; i < cols; i++) {
+            if (colLabel[i] == NOT_LABELED) {
+                colScanDone = false;
+                for (int j = 0; j < rows; j++) {
+                    if (adj[j][i] == NOT_MATCH && rowLabel[j] == NOT_LABELED)
+                        rowLabel[j] = i;
+                }
+            }
+        }
+        if (colScanDone)
+            return;
+        label();
+    }
+
+    public int countMatch() {
+        int count = 0;
+        System.out.println("The maximum matching is as follows:");
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (adj[i][j] == MATCH) {
+                    count++;
+                    System.out.println("(" + i + "," + j + ")");
+                }
+            }
+        }
+        return count;
+    }
+
+    public static void testCase(int[][] adj) {
+        MaxBipartiteMatching mb = new MaxBipartiteMatching(adj);
+        mb.match();
+        System.out.println("Matching Number = " + mb.countMatch());
+        System.out.println("Matching matrix:");
+        for (int i = 0; i < adj.length; i++) {
+            System.out.print(i + "| ");
+            for (int j = 0; j < adj[0].length; j++) {
+                System.out.print(adj[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of vertices in the left  partition: ");
+        int rows = scanner.nextInt();
+        System.out.print("Enter the number of vertices in the right partition: ");
+        int cols = scanner.nextInt();
+        int[][] adj = new int[rows][cols];
+        System.out.println("Enter the adjacency matrix (0 for no edge, 1 for edge):");
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                adj[i][j] = scanner.nextInt();
+            }
+        }
+        System.out.println("The adjacency matrix is:");
+        for (int[] row : adj) {
+            for (int val : row)
+                System.out.print(val + " ");
+            System.out.println();
+        }
+        testCase(adj);
+        scanner.close();
+    }
+}
